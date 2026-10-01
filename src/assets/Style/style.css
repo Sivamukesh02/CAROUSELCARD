@@ -1,0 +1,200 @@
+/* Put this at the TOP of style.css (@import must be first) */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Inter:wght@400;500&display=swap");
+
+/* ---------- Jewelry collection (all classes start with jw-) ---------- */
+.jw-page {
+  --jw-bg-top: #8fb0b5;
+  --jw-bg-bottom: #a3cbd1;
+  --jw-ink: #10202a;
+  --jw-dark: #2a3439;
+
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--jw-bg-top), var(--jw-bg-bottom));
+  color: var(--jw-ink);
+  font-family: "Inter", sans-serif;
+}
+
+/* ----- List view ----- */
+.jw-list {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 0 28px;
+}
+
+.jw-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 400;
+}
+.jw-title-small {
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.jw-title-big {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(44px, 7vw, 76px);
+  line-height: 1;
+}
+
+.jw-swiper {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 40px 0;
+  overflow: visible;
+}
+
+.jw-slide {
+  width: 210px;
+  height: 290px;
+}
+
+.jw-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #b7d4d8;
+  box-shadow: 0 18px 40px rgba(20, 50, 60, 0.28);
+}
+.jw-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+}
+
+.jw-details-btn {
+  padding: 9px 26px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--jw-dark);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.jw-details-btn:hover {
+  background: #11181b;
+}
+.jw-details-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ----- Detail view ----- */
+.jw-detail {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+  padding: 60px 8vw;
+}
+
+.jw-back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--jw-dark);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.jw-back:focus-visible,
+.jw-cart:focus-visible,
+.jw-card:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* stacked look: real images, one behind another (poses set by GSAP) */
+.jw-stack {
+  position: relative;
+  justify-self: center;
+  width: min(380px, 70vw);
+  aspect-ratio: 3 / 4;
+}
+.jw-stack-card {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #e9ecee;
+  box-shadow: 0 18px 40px rgba(20, 50, 60, 0.28);
+}
+.jw-stack-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.jw-detail-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.jw-name {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(32px, 4vw, 46px);
+}
+.jw-price {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+.jw-cart {
+  width: min(320px, 100%);
+  padding: 12px 0;
+  border: 0;
+  border-radius: 6px;
+  background: var(--jw-dark);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.jw-cart:hover {
+  background: #11181b;
+}
+.jw-cart.is-added {
+  background: #3b7566;
+}
+
+/* ----- Mobile ----- */
+@media (max-width: 720px) {
+  .jw-slide {
+    width: 160px;
+    height: 230px;
+  }
+  .jw-detail {
+    grid-template-columns: 1fr;
+    padding: 70px 24px 40px;
+    gap: 56px;
+  }
+}
