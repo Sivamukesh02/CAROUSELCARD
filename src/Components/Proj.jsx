@@ -1,4 +1,4 @@
-// React-la useRef (DOM-a pidikka), useState (data maaranum), useEffect (timer) ku
+// React-la useRef (DOM-a pidikka), useState (data maaranum), useEffect (keyboard arrow keys) ku
 import React, { useEffect, useRef, useState } from "react";
 
 // Swiper = carousel. SwiperSlide = ovoru card slide
@@ -29,7 +29,7 @@ import img6 from "../assets/Image/jj7.png";
 import img7 from "../assets/Image/jj9.png";
 import img8 from "../assets/Image/jj10.png";
 
-// 8 images -> 8 cards. Image maathanum na inga maathunga.
+
 const pics = [img1, img2, img3, img4, img5, img6, img7, img8];
 const names = [
   "Phantom Gold",
@@ -72,21 +72,29 @@ const COVERFLOW = { ...FINAL, modifier: 1, slideShadows: false };
 function Proj() {
   const root = useRef(null);
   const prevView = useRef(null);
-  const paused = useRef(false);
   const swiperRef = useRef(null);
+  const dirRef = useRef(1); // 1 = next (>), -1 = previous (<)
 
   const [view, setView] = useState("list"); // "list" illa "detail"
   const [active, setActive] = useState(3); // list-la center-la irukkura card
   const [current, setCurrent] = useState(0); // detail-la munnadi irukkura card
   const [cart, setCart] = useState([]); // add pannina card ids
 
-  // Detail view-la 2.8s ku oru thadava adutha card-ku maarum
+  // (<) (>) button illa keyboard arrow key click panna card maarum
+  const go = (dir) => {
+    dirRef.current = dir;
+    setCurrent((c) => (c + dir + N) % N);
+  };
+
+  // Laptop keyboard: Left arrow = previous, Right arrow = next (detail view-la mattum)
   useEffect(() => {
     if (view !== "detail") return;
-    const id = setInterval(() => {
-      if (!paused.current) setCurrent((c) => (c + 1) % N);
-    }, 2800);
-    return () => clearInterval(id);
+    const onKey = (e) => {
+      if (e.key === "ArrowRight") go(1);
+      if (e.key === "ArrowLeft") go(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [view]);
 
   useGSAP(
@@ -136,26 +144,36 @@ function Proj() {
           .from(".jw-details-btn", { y: 12, opacity: 0, duration: 0.5, ease: "power3.out" }, ">-0.2");
       } else {
         // Detail view
+        const dir = dirRef.current;
+
         gsap.utils.toArray(".jw-stack-card").forEach((el, i) => {
           const rank = (i - current + N) % N;
           const pose = poseFor(rank);
+          gsap.killTweensOf(el);
 
           if (opened) {
             gsap.set(el, pose);
-          } else if (rank === N - 1) {
-            // munnadi irundha card left-ku pogi maraiyum, apparam pinnadi poidum
+          } else if (dir === 1 && rank === N - 1) {
+            // > click: munnadi irundha card left-ku pogi maraiyum, apparam pinnadi poidum
             gsap
-              .timeline({ overwrite: "auto" })
+              .timeline()
               .to(el, { x: -120, rotate: -8, opacity: 0, duration: 0.45, ease: "power2.in" })
               .set(el, poseFor(N));
+          } else if (dir === -1 && rank === 0) {
+            // < click: pinnadi irundha card left-la irundhu munnadi thirumba varum
+            gsap.fromTo(
+              el,
+              { x: -120, rotate: -8, opacity: 0, zIndex: N + 1, scale: 1 },
+              { ...pose, duration: 0.6, ease: "power3.out" }
+            );
           } else {
-            gsap.to(el, { ...pose, duration: 0.7, ease: "power3.inOut", overwrite: "auto" });
+            gsap.to(el, { ...pose, duration: 0.7, ease: "power3.inOut" });
           }
         });
 
         if (opened) {
           const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-          tl.from(".jw-stack", { x: -140, opacity: 0, duration: 0.7 })
+          tl.from(".jw-left", { x: -140, opacity: 0, duration: 0.7 })
             .from(".jw-detail-info > *", { y: 24, opacity: 0, duration: 0.5, stagger: 0.1 }, "-=0.35")
             .from(".jw-back", { x: -20, opacity: 0, duration: 0.4 }, "<");
         } else {
@@ -172,6 +190,7 @@ function Proj() {
   );
 
   const openDetails = () => {
+    dirRef.current = 1;
     setCurrent(active);
     setView("detail");
   };
@@ -225,19 +244,30 @@ function Proj() {
             ‹ Back
           </button>
 
-          <div className="jw-stack">
-            {items.map((it) => (
-              <div className="jw-stack-card" key={it.id}>
-                <img src={it.image} alt={it.name} />
-              </div>
-            ))}
+          <div className="jw-left">
+            <div className="jw-stack">
+              {items.map((it) => (
+                <div className="jw-stack-card" key={it.id}>
+                  <img src={it.image} alt={it.name} />
+                </div>
+              ))}
+            </div>
+
+            {/* Card keela (<) (>) buttons */}
+            <div className="jw-nav">
+              <button className="jw-nav-btn" onClick={() => go(-1)} aria-label="Previous">
+                ‹
+              </button>
+              <span className="jw-count">
+                {current + 1} / {N}
+              </span>
+              <button className="jw-nav-btn" onClick={() => go(1)} aria-label="Next">
+                ›
+              </button>
+            </div>
           </div>
 
-          <div
-            className="jw-detail-info"
-            onMouseEnter={() => (paused.current = true)}
-            onMouseLeave={() => (paused.current = false)}
-          >
+          <div className="jw-detail-info">
             <h2 className="jw-name">{item.name}</h2>
             <p className="jw-price">{formatPrice(item.price)}</p>
             <button
